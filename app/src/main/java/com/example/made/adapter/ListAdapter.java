@@ -1,4 +1,4 @@
-package com.example.made;
+package com.example.made.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.made.data.Movie;
+import com.example.made.R;
 
 import java.util.ArrayList;
 

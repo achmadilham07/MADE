@@ -1,4 +1,4 @@
-package com.example.made;
+package com.example.made.data;
 
 import java.util.ArrayList;
 

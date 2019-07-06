@@ -1,54 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/white"
-    tools:context="com.example.myrecyclerview.DetailActivity">
+    android:orientation="vertical">
 
-    <ScrollView
-        android:id="@+id/activity_main"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <include
+            android:id="@+id/include"
+            layout="@layout/toolbar_"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginBottom="667dp"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/img_item_photo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/pixel_google" />
+        <ImageView
+            android:id="@+id/img_item_photo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/pixel_google"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/include" />
 
-            </FrameLayout>
+        <TextView
+            android:id="@+id/item_name"
+            style="@style/TextContent.Black"
+            android:layout_width="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="350dp"
+            android:textSize="32sp"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img_item_photo"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="Name Of Pokemon" />
 
-            <TextView
-                android:id="@+id/item_name"
-                style="@style/TextContent.Black"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:layout_marginBottom="8dp"
-                android:textSize="32sp"
-                tools:text="Name Of Pokemon" />
+        <TextView
+            android:id="@+id/txt_description"
+            style="@style/TextContent.Subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="326dp"
+            android:text="Information"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_name" />
 
-            <TextView
-                android:id="@+id/txt_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/TextContent.Subtitle"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:layout_marginBottom="8dp"
-                android:textSize="18sp"
-                android:text="Information" />
-
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="56dp" />
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

@@ -1,4 +1,4 @@
-package com.example.made;
+package com.example.made.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,19 +11,21 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.made.data.Movie;
+import com.example.made.R;
 
 import java.util.ArrayList;
 
-public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewViewHolder>{
+public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.CardViewViewHolder>{
     private Context context;
-    private ArrayList<Movie> listPokemon;
-    private ArrayList<Movie> getListPokemon() {
-        return listPokemon;
+    private ArrayList<Movie> listMovie;
+    private ArrayList<Movie> getListMovie() {
+        return listMovie;
     }
-    public void setListPokemon(ArrayList<Movie> listPokemon) {
-        this.listPokemon = listPokemon;
+    public void setListMovie(ArrayList<Movie> listMovie) {
+        this.listMovie = listMovie;
     }
-    public CardViewAdapter(Context context) {
+    public MovieViewAdapter(Context context) {
         this.context = context;
     }
 
@@ -36,7 +38,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
     @Override
     public void onBindViewHolder(@NonNull CardViewViewHolder cardViewViewHolder, int i) {
-        Movie p = getListPokemon().get(i);
+        Movie p = getListMovie().get(i);
         Glide.with(context)
                 .load(p.getThumbnail())
                 .apply(new RequestOptions().override(350, 350))
@@ -47,7 +49,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
     @Override
     public int getItemCount() {
-        return getListPokemon().size();
+        return getListMovie().size();
     }
 
     class CardViewViewHolder extends RecyclerView.ViewHolder{

@@ -1,144 +1,77 @@
 package com.example.made;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+
+import com.example.made.fragment.MovieFrag;
+import com.example.made.fragment.TvShowFrag;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    RecyclerView rvCategory;
-    private ArrayList<Movie> list;
-    final String STATE_TITLE = "state_string";
-    final String STATE_LIST = "state_list";
-    final String STATE_MODE = "state_mode";
-    int mode;
+
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        rvCategory = findViewById(R.id.rv_category);
-        rvCategory.setHasFixedSize(true);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        list = new ArrayList<>();
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle("MADE");
 
-        if (savedInstanceState == null) {
-            setActionBarTitle("Mode List");
-            list.addAll(MovieData.getListData());
-            showRecyclerList();
-            mode = R.id.action_list;
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
 
-        } else {
-            String stateTitle = savedInstanceState.getString(STATE_TITLE);
-            ArrayList<Movie> stateList = savedInstanceState.getParcelableArrayList(STATE_LIST);
-            int stateMode = savedInstanceState.getInt(STATE_MODE);
-            setActionBarTitle(stateTitle);
-            list.addAll(stateList);
-            setMode(stateMode);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new MovieFrag(), "Movie");
+        adapter.addFragment(new TvShowFrag(), "TV Show");
+        viewPager.setAdapter(adapter);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
         }
     }
-
-    private void showSelectedPresident(Movie pokemon) {
-        Toast.makeText(this, "Kamu memilih " + pokemon.getName(), Toast.LENGTH_SHORT).show();
-
-        Intent moveWithDataIntent = new Intent(MainActivity.this, DetailActivity.class);
-//        Bundle bundle = null;
-//        bundle.putParcelable(DetailActivity.EXTRA_POKEMON, pokemon); // Be sure con is not null here
-//        moveWithDataIntent.putExtras(bundle);
-        moveWithDataIntent.putExtra(DetailActivity.EXTRA_POKEMON, pokemon);
-        startActivity(moveWithDataIntent);
-    }
-
-    private void showRecyclerList() {
-        rvCategory.setLayoutManager(new LinearLayoutManager(this));
-        ListAdapter listPresidentAdapter = new ListAdapter(this);
-        listPresidentAdapter.setListPokemon(list);
-        rvCategory.setAdapter(listPresidentAdapter);
-
-        ItemClickSupport.addTo(rvCategory).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-            @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                showSelectedPresident(list.get(position));
-            }
-        });
-    }
-
-    private void showRecyclerGrid() {
-        rvCategory.setLayoutManager(new GridLayoutManager(this, 2));
-        GridAdapter gridPresidentAdapter = new GridAdapter(this);
-        gridPresidentAdapter.setListPokemon(list);
-        rvCategory.setAdapter(gridPresidentAdapter);
-
-        ItemClickSupport.addTo(rvCategory).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-            @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                showSelectedPresident(list.get(position));
-            }
-        });
-    }
-
-    private void showRecyclerCardView() {
-        rvCategory.setLayoutManager(new LinearLayoutManager(this));
-        CardViewAdapter cardViewPresidentAdapter = new CardViewAdapter(this);
-        cardViewPresidentAdapter.setListPokemon(list);
-        rvCategory.setAdapter(cardViewPresidentAdapter);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    private void setActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        setMode(item.getItemId());
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void setMode(int selectedMode) {
-        String title = null;
-        switch (selectedMode) {
-            case R.id.action_list:
-                title = "Mode List";
-                showRecyclerList();
-                break;
-
-            case R.id.action_grid:
-                title = "Mode Grid";
-                showRecyclerGrid();
-                break;
-
-            case R.id.action_cardview:
-                title = "Mode CardView";
-                showRecyclerCardView();
-                break;
-        }
-        mode = selectedMode;
-        setActionBarTitle(title);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(STATE_TITLE, getSupportActionBar().getTitle().toString());
-        outState.putParcelableArrayList(STATE_LIST, list);
-        outState.putInt(STATE_MODE, mode);
-    }
-
 }
