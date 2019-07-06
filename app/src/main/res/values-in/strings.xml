@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Kelas MADE</string>
+    <string name="list">Daftar</string>
+    <string name="grid">Grid</string>
+    <string name="with_cardview">dengan  CardView</string>
+    <string name="favorite">Favorit</string>
+    <string name="share">Sebarkan</string>
+    <string name="change_language_settings">Ubah pengaturan bahasa</string>
+    <string name="tab1">Film</string>
+    <string name="tab2">Acara Tv</string>
+</resources>
+
