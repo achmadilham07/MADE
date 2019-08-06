@@ -13,53 +13,78 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.made.data.Movie;
 import com.example.made.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.CardViewViewHolder>{
-    private Context context;
-    private ArrayList<Movie> listMovie;
-    private ArrayList<Movie> getListMovie() {
-        return listMovie;
+import jp.wasabeef.picasso.transformations.BlurTransformation;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
+
+public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.MovieHolder> {
+
+    private ArrayList<Movie> items;
+
+    public MovieViewAdapter(ArrayList<Movie> items) {
+        this.items = items;
     }
-    public void setListMovie(ArrayList<Movie> listMovie) {
-        this.listMovie = listMovie;
-    }
-    public MovieViewAdapter(Context context) {
-        this.context = context;
+
+    public void refill(ArrayList<Movie> items) {
+        this.items = new ArrayList<>();
+        this.items.addAll(items);
+
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
-    public CardViewViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_cardview_president, viewGroup, false);
-        return new CardViewViewHolder(view);
+    public MovieHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_cardview_president, viewGroup, false);
+        return new MovieHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CardViewViewHolder cardViewViewHolder, int i) {
-        Movie p = getListMovie().get(i);
-        Glide.with(context)
-                .load(p.getThumbnail())
-                .apply(new RequestOptions().override(350, 350))
-                .into(cardViewViewHolder.imgPhoto);
-        cardViewViewHolder.tvName.setText(p.getName());
-        cardViewViewHolder.tvInfo.setText(p.getOverview());
+    public void onBindViewHolder(@NonNull MovieHolder movieHolder, int i) {
+        movieHolder.onBind(items.get(i));
     }
 
     @Override
     public int getItemCount() {
-        return getListMovie().size();
+        return items.size();
     }
 
-    class CardViewViewHolder extends RecyclerView.ViewHolder{
-        ImageView imgPhoto;
-        TextView tvName, tvInfo;
-        CardViewViewHolder(View itemView) {
+    class MovieHolder extends RecyclerView.ViewHolder {
+
+        private TextView tvTitle, tvInfo, tvVote;
+        private ImageView ivPoster, ivBackdrop;
+
+        MovieHolder(@NonNull View itemView) {
             super(itemView);
-            imgPhoto = itemView.findViewById(R.id.img_item_photo);
-            tvName = itemView.findViewById(R.id.item_name);
+
+            tvTitle = itemView.findViewById(R.id.item_name);
+            ivPoster = itemView.findViewById(R.id.img_item_photo);
             tvInfo = itemView.findViewById(R.id.txt_description);
+        }
+
+        void onBind(Movie item) {
+            if (item.getImage() != null && !item.getImage().isEmpty()) {
+                Picasso.get().load(item.getImage()).transform(new CropCircleTransformation()).into(ivPoster);
+            }
+
+            String title = checkTextIfNull(item.getName());
+            if (title.length() > 30) {
+                tvTitle.setText(String.format("%s...", title.substring(0, 29)));
+            } else {
+                tvTitle.setText(checkTextIfNull(item.getName()));
+            }
+            tvInfo.setText(checkTextIfNull(item.getOverview()));
+        }
+
+        String checkTextIfNull(String text) {
+            if (text != null && !text.isEmpty()) {
+                return text;
+            } else {
+                return "-";
+            }
         }
     }
 }

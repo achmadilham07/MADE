@@ -3,41 +3,36 @@ package com.example.made.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Movie implements Parcelable {
-    private String name, image, thumbnail, overview;
+    @SerializedName("title")
+    private String name;
+
+    @SerializedName("poster_path")
+    private String image;
+
+    @SerializedName("backdrop_path")
+    private String thumbnail;
+
+    @SerializedName("overview")
+    private String overview;
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
+        return "https://image.tmdb.org/t/p/w185/" + image;
     }
 
     public String getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
+        return "https://image.tmdb.org/t/p/w185/" + thumbnail;
     }
 
     public String getOverview() {
         return overview;
     }
-
-    public void setOverview(String overview) {
-        this.overview = overview;
-    }
-
 
     @Override
     public int describeContents() {
@@ -55,7 +50,7 @@ public class Movie implements Parcelable {
     public Movie() {
     }
 
-    protected Movie(Parcel in) {
+    private Movie(Parcel in) {
         this.name = in.readString();
         this.image = in.readString();
         this.thumbnail = in.readString();
