@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +14,11 @@ import android.widget.Toast;
 
 import com.example.made.DetailActivity;
 import com.example.made.ItemClickSupport;
+import com.example.made.R;
+import com.example.made.adapter.MovieViewAdapter;
 import com.example.made.api.DBApi;
 import com.example.made.data.Movie;
 import com.example.made.data.MovieData;
-import com.example.made.R;
-import com.example.made.adapter.MovieViewAdapter;
 import com.example.made.presenter.MainView;
 
 import java.util.ArrayList;
@@ -27,11 +26,11 @@ import java.util.ArrayList;
 
 public class MovieFrag extends Fragment implements MainView.MovieDataSourcesCallback {
 
-    RecyclerView rvCategory;
+    private RecyclerView rvCategory;
     private ArrayList<Movie> list = new ArrayList<>();
-    MovieViewAdapter movieAdapter;
+    private MovieViewAdapter movieAdapter;
     private String KEY_MOVIES = "movies";
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
 
     public MovieFrag() {
     }

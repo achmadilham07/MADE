@@ -1,10 +1,5 @@
 <resources>
     <string name="app_name">MADE Class</string>
-    <string name="list">List</string>
-    <string name="grid">Grid</string>
-    <string name="with_cardview">with CardView</string>
-    <string name="favorite">Favorite</string>
-    <string name="share">Share</string>
     <string name="change_language_settings">Change Language Settings</string>
     <string name="tab1">Movie</string>
     <string name="tab2">Tv Show</string>

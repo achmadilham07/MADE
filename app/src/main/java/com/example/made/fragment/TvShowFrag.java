@@ -26,11 +26,11 @@ import java.util.ArrayList;
 
 public class TvShowFrag extends Fragment implements MainView.TvShowDataSourcesCallback {
 
-    RecyclerView rvCategory;
+    private RecyclerView rvCategory;
+    private TvShowViewAdapter movieAdapter;
+    private ProgressBar progressBar;
     private ArrayList<TvShow> list = new ArrayList<>();
-    TvShowViewAdapter movieAdapter;
     private String KEY_MOVIES = "tvshows";
-    ProgressBar progressBar;
 
     public TvShowFrag() {
     }
