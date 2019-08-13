@@ -29,7 +29,7 @@
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintHorizontal_bias="0.0"
             card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toTopOf="@+id/txt_description"
+            card_view:layout_constraintTop_toTopOf="@+id/runtime"
             tools:src="@color/colorAccent" />
 
 
@@ -51,7 +51,7 @@
             tools:text="Soekarno" />
 
         <TextView
-            android:id="@+id/txt_description"
+            android:id="@+id/runtime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

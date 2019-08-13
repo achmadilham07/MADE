@@ -3,5 +3,11 @@
     <string name="change_language_settings">Ubah pengaturan bahasa</string>
     <string name="tab1">Film</string>
     <string name="tab2">Acara Tv</string>
+    <string name="tab3">Favorit</string>
+    <string name="overview">Ringkasan</string>
+    <string name="first_air_date">Tanggal Rilis</string>
+    <string name="status">Status</string>
+    <string name="runtime">Durasi</string>
+    <string name="minute">meniit</string>
 </resources>
 

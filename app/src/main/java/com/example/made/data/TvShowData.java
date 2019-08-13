@@ -8,7 +8,7 @@ public class TvShowData {
     @SerializedName("results")
     private ArrayList<TvShow> results;
 
-    public ArrayList<TvShow> getResults(){
+    public ArrayList<TvShow> getResults() {
         return results;
     }
 

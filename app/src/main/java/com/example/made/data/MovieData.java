@@ -8,7 +8,7 @@ public class MovieData {
     @SerializedName("results")
     private ArrayList<Movie> results;
 
-    public ArrayList<Movie> getResults(){
+    public ArrayList<Movie> getResults() {
         return results;
     }
 

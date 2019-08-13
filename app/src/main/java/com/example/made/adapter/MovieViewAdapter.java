@@ -1,6 +1,6 @@
 package com.example.made.adapter;
 
-import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,27 +9,31 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.example.made.data.Movie;
 import com.example.made.R;
+import com.example.made.data.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import jp.wasabeef.picasso.transformations.BlurTransformation;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.MovieHolder> {
 
     private ArrayList<Movie> items;
+    private View view;
 
     public MovieViewAdapter(ArrayList<Movie> items) {
         this.items = items;
     }
 
+    public ArrayList<Movie> getListNotes() {
+        return items;
+    }
+
     public void refill(ArrayList<Movie> items) {
-        this.items = new ArrayList<>();
+        if (items.size() > 0) {
+            this.items = new ArrayList<>();
+        }
         this.items.addAll(items);
 
         notifyDataSetChanged();
@@ -38,6 +42,7 @@ public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.Movi
     @NonNull
     @Override
     public MovieHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        view = viewGroup;
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_cardview_president, viewGroup, false);
         return new MovieHolder(v);
     }
@@ -62,7 +67,7 @@ public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.Movi
 
             tvTitle = itemView.findViewById(R.id.item_name);
             ivPoster = itemView.findViewById(R.id.img_item_photo);
-            tvInfo = itemView.findViewById(R.id.txt_description);
+            tvInfo = itemView.findViewById(R.id.runtime);
         }
 
         void onBind(Movie item) {
@@ -71,9 +76,11 @@ public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.Movi
             }
 
             String title = checkTextIfNull(item.getName());
-            if (title.length() > 30) {
+            int orientation = view.getResources().getConfiguration().orientation;
+
+            if (title.length() > 30 && orientation == Configuration.ORIENTATION_PORTRAIT) {
                 tvTitle.setText(String.format("%s...", title.substring(0, 29)));
-            } else {
+            } else if (title.length() <= 30 || orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 tvTitle.setText(checkTextIfNull(item.getName()));
             }
             tvInfo.setText(checkTextIfNull(item.getOverview()));

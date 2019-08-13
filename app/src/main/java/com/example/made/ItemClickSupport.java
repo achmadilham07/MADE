@@ -38,15 +38,18 @@ public class ItemClickSupport {
                 view.setOnLongClickListener(mOnLongClickListener);
             }
         }
+
         @Override
         public void onChildViewDetachedFromWindow(@NonNull View view) {
         }
     };
+
     private ItemClickSupport(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
         mRecyclerView.setTag(R.id.item_click_support, this);
         mRecyclerView.addOnChildAttachStateChangeListener(mAttachListener);
     }
+
     public static ItemClickSupport addTo(RecyclerView view) {
         ItemClickSupport support = (ItemClickSupport) view.getTag(R.id.item_click_support);
         if (support == null) {
@@ -54,6 +57,7 @@ public class ItemClickSupport {
         }
         return support;
     }
+
     public static ItemClickSupport removeFrom(RecyclerView view) {
         ItemClickSupport support = (ItemClickSupport) view.getTag(R.id.item_click_support);
         if (support != null) {
@@ -61,19 +65,24 @@ public class ItemClickSupport {
         }
         return support;
     }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         mOnItemClickListener = listener;
     }
+
     public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         mOnItemLongClickListener = listener;
     }
+
     private void detach(RecyclerView view) {
         view.removeOnChildAttachStateChangeListener(mAttachListener);
         view.setTag(R.id.item_click_support, null);
     }
+
     public interface OnItemClickListener {
         void onItemClicked(RecyclerView recyclerView, int position, View v);
     }
+
     public interface OnItemLongClickListener {
         boolean onItemLongClicked(RecyclerView recyclerView, int position, View v);
     }
