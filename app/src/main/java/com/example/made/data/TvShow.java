@@ -7,6 +7,17 @@ import com.google.gson.annotations.SerializedName;
 
 public class TvShow implements Parcelable {
 
+    public static final Creator<TvShow> CREATOR = new Creator<TvShow>() {
+        @Override
+        public TvShow createFromParcel(Parcel source) {
+            return new TvShow(source);
+        }
+
+        @Override
+        public TvShow[] newArray(int size) {
+            return new TvShow[size];
+        }
+    };
     @SerializedName("id")
     private int id;
     @SerializedName("name")
@@ -42,36 +53,36 @@ public class TvShow implements Parcelable {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getImage() {
-        return "https://image.tmdb.org/t/p/w185/" + image;
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getThumbnail() {
-        return "https://image.tmdb.org/t/p/w185/" + thumbnail;
+    public String getImage() {
+        return "https://image.tmdb.org/t/p/w185/" + image;
     }
 
     public void setImage(String image) {
         this.image = image;
     }
 
-    public String getOverview() {
-        return overview;
+    public String getThumbnail() {
+        return "https://image.tmdb.org/t/p/w185/" + thumbnail;
     }
 
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public String getOverview() {
+        return overview;
     }
 
     public void setOverview(String overview) {
@@ -98,13 +109,13 @@ public class TvShow implements Parcelable {
         return runtime;
     }
 
+    public void setRuntime(int[] runtime) {
+        this.runtime = runtime;
+    }
+
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    public void setRuntime(int[] runtime) {
-        this.runtime = runtime;
     }
 
     @Override
@@ -118,16 +129,4 @@ public class TvShow implements Parcelable {
         dest.writeIntArray(this.runtime);
         dest.writeString(this.status);
     }
-
-    public static final Creator<TvShow> CREATOR = new Creator<TvShow>() {
-        @Override
-        public TvShow createFromParcel(Parcel source) {
-            return new TvShow(source);
-        }
-
-        @Override
-        public TvShow[] newArray(int size) {
-            return new TvShow[size];
-        }
-    };
 }
