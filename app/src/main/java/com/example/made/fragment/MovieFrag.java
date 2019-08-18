@@ -1,13 +1,17 @@
 package com.example.made.fragment;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -24,14 +28,32 @@ import com.example.made.data.MovieData;
 
 import java.util.ArrayList;
 
-public class MovieFrag extends Fragment implements MainView.MovieDataArrayList {
+import static com.example.made.db.DatabaseContract.MovieCol.CONTENT_URI;
+
+public class MovieFrag extends Fragment implements MainView.MovieDataArrayList, MainView.MovieDataSearchList {
 
     private RecyclerView rvCategory;
-    private ArrayList<Movie> list = new ArrayList<>();
+    private ArrayList<Movie> movies = new ArrayList<>();        // utama
+    private ArrayList<Movie> movie = new ArrayList<>();         // hasil search
     private MovieViewAdapter movieAdapter;
     private String KEY_MOVIES = "movies";
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefresh;
+    private SearchView searchView;
+    private SearchView.OnQueryTextListener searchQueryListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String s) {
+            DBApi.doReqSearchMovie(s, MovieFrag.this);
+            searchView.clearFocus();
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String s) {
+            loadQuery(s);
+            return false;
+        }
+    };
 
     public MovieFrag() {
     }
@@ -67,13 +89,13 @@ public class MovieFrag extends Fragment implements MainView.MovieDataArrayList {
             Toast.makeText(getContext(), "Movie Ngulang lagi", Toast.LENGTH_SHORT).show();
             DBApi.doReqMovies(this);
         } else {
-            list = savedInstanceState.getParcelableArrayList(KEY_MOVIES);
-            movieAdapter.refill(list);
+            movies = savedInstanceState.getParcelableArrayList(KEY_MOVIES);
+            movieAdapter.refill(movies);
         }
     }
 
     private void init(View view) {
-        movieAdapter = new MovieViewAdapter(list);
+        movieAdapter = new MovieViewAdapter(movies);
 
         progressBar = view.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
@@ -90,22 +112,61 @@ public class MovieFrag extends Fragment implements MainView.MovieDataArrayList {
         rvCategory.setHasFixedSize(true);
         rvCategory.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCategory.setAdapter(movieAdapter);
+
+        setHasOptionsMenu(true);
     }
 
     private void showRecyclerCardView() {
         ItemClickSupport.addTo(rvCategory).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                showSelectedPresident(list.get(position).getId());
+                showSelectedPresident(movies.get(position).getId());
             }
         });
     }
 
     private void showSelectedPresident(int idMovie) {
         Intent moveWithDataIntent = new Intent(getActivity(), DetailActivity.class);
+        Uri uri = Uri.parse(CONTENT_URI + "/" + idMovie);
+        moveWithDataIntent.setData(uri);
         moveWithDataIntent.putExtra(DetailActivity.EXTRA_INT, 1);
         moveWithDataIntent.putExtra(DetailActivity.EXTRA_MOVIE, idMovie);
         startActivity(moveWithDataIntent);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.id_search);
+        searchView = (SearchView) menuItem.getActionView();
+        searchView.setIconifiedByDefault(true);
+        searchView.setQueryHint("looking something...");
+        searchView.setFocusable(false);
+        searchView.setIconified(false);
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(searchQueryListener);
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                movieAdapter.refill(movie);
+                movies = movieAdapter.getListNotes();
+                searchView.onActionViewCollapsed();
+                return false;
+            }
+        });
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    private void loadQuery(String s) {
+        ArrayList<Movie> filterdata = new ArrayList<>();
+        String nextText = s.toLowerCase();
+        for (Movie data : movie) {
+            String judul = data.getName().toLowerCase();
+            if (judul.contains(nextText))
+                filterdata.add(data);
+        }
+        movieAdapter.refill(filterdata);
+        movies = movieAdapter.getListNotes();
     }
 
     @Override
@@ -114,10 +175,22 @@ public class MovieFrag extends Fragment implements MainView.MovieDataArrayList {
     }
 
     @Override
-    public void onSuccessMovie(MovieData movieResponse) {
+    public void hideLoading() {
         progressBar.setVisibility(View.GONE);
-        list = movieResponse.getResults();
-        movieAdapter.refill(list);
+    }
+
+    @Override
+    public void onSuccessSearchList(MovieData movieResponse) {
+        movies = movieResponse.getResults();
+        movieAdapter.refill(movies);
+    }
+
+    @Override
+    public void onSuccessMovie(MovieData movieResponse) {
+        movies = movieResponse.getResults();
+        movie = new ArrayList<>();
+        movie.addAll(movies);
+        movieAdapter.refill(movies);
     }
 
     @Override
@@ -128,6 +201,6 @@ public class MovieFrag extends Fragment implements MainView.MovieDataArrayList {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(KEY_MOVIES, list);
+        outState.putParcelableArrayList(KEY_MOVIES, movies);
     }
 }

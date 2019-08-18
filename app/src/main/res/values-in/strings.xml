@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kelas MADE</string>
     <string name="change_language_settings">Ubah pengaturan bahasa</string>
@@ -9,5 +10,8 @@
     <string name="status">Status</string>
     <string name="runtime">Durasi</string>
     <string name="minute">meniit</string>
+    <string name="search">Cari</string>
+    <string name="appwidget_text">CONTOH</string>
+    <string name="empty_text">TIDAK ADA DATA</string>
 </resources>
 

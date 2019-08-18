@@ -29,7 +29,7 @@ public class MovieHelper {
     private static MovieHelper INSTANCE;
     private static SQLiteDatabase database;
 
-    private MovieHelper(Context context) {
+    MovieHelper(Context context) {
         databaseHelper = new DatabaseHelper(context);
     }
 
@@ -72,32 +72,13 @@ public class MovieHelper {
         Movie movie;
         if (cursor.getCount() > 0) {
             do {
-                movie = new Movie();
-                movie.setId(cursor.getInt(cursor.getColumnIndexOrThrow(MOVIEID)));
-                movie.setName(cursor.getString(cursor.getColumnIndexOrThrow(NAME)));
-                movie.setImage(setDataImage(cursor, IMAGE));
-                movie.setThumbnail(setDataImage(cursor, THUMBNAIL));
-                movie.setOverview(cursor.getString(cursor.getColumnIndexOrThrow(OVERVIEW)));
-                movie.setRelease_date(cursor.getString(cursor.getColumnIndexOrThrow(DATE)));
-                movie.setRuntime(cursor.getInt(cursor.getColumnIndexOrThrow(RUNTIME)));
-                movie.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(STATUS)));
-
+                movie = new Movie(cursor);
                 arrayList.add(movie);
                 cursor.moveToNext();
             } while (!cursor.isAfterLast());
         }
         cursor.close();
         return arrayList;
-    }
-
-    private String setDataImage(Cursor cursor, String image) {
-        String s = cursor.getString(cursor.getColumnIndexOrThrow(image));
-        String[] tokens = s.split("//");
-
-        for (String t : tokens)
-            Log.e("data_gambar", t);
-
-        return tokens[2];
     }
 
     public long insertNote(Movie movie) {
@@ -140,5 +121,37 @@ public class MovieHelper {
             return cursor.getCount();
         }
         return 0;
+    }
+
+    public Cursor queryByIdProvider(String id) {
+        return database.query(DATABASE_TABLE, null
+                , _ID + " = ?"
+                , new String[]{id}
+                , null
+                , null
+                , null
+                , null);
+    }
+
+    public Cursor queryProvider() {
+        return database.query(DATABASE_TABLE
+                , null
+                , null
+                , null
+                , null
+                , null
+                , _ID + " ASC");
+    }
+
+    public long insertProvider(ContentValues values) {
+        return database.insert(DATABASE_TABLE, null, values);
+    }
+
+    public int updateProvider(String id, ContentValues values) {
+        return database.update(DATABASE_TABLE, values, _ID + " = ?", new String[]{id});
+    }
+
+    public int deleteProvider(String id) {
+        return database.delete(DATABASE_TABLE, MOVIEID + " = ?", new String[]{id});
     }
 }

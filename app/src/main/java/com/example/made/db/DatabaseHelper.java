@@ -14,14 +14,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String SQL_CREATE_TABLE_MOVIE = String.format(
             "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "%s INTEGER NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s INTEGER NOT NULL," +
-                    "%s TEXT NOT NULL);",
+                    "%s INTEGER NOT NULL," +    // MOVIEID
+                    "%s TEXT NOT NULL," +       // NAME
+                    "%s TEXT NOT NULL," +       // IMAGE
+                    "%s TEXT NOT NULL," +       // THUMBNAIL
+                    "%s TEXT NOT NULL," +       // OVERVIEW
+                    "%s TEXT NOT NULL," +       // DATE
+                    "%s INTEGER NOT NULL," +    // RUNTIME
+                    "%s TEXT NOT NULL);",       // STATUS
             NAME_TABLE_MOVIE,
             DatabaseContract.MovieCol._ID,
             DatabaseContract.MovieCol.MOVIEID,
@@ -36,14 +36,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_TABLE_TV = String.format(
             "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "%s INTEGER NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL," +
-                    "%s INTEGER NOT NULL," +
-                    "%s TEXT NOT NULL);",
+                    "%s INTEGER NOT NULL," +    // TVID
+                    "%s TEXT NOT NULL," +       // NAME
+                    "%s TEXT NOT NULL," +       // IMAGE
+                    "%s TEXT NOT NULL," +       // THUMBNAIL
+                    "%s TEXT NOT NULL," +       // OVERVIEW
+                    "%s TEXT NOT NULL," +       // DATE
+                    "%s INTEGER NOT NULL," +    // RUNTIME
+                    "%s TEXT NOT NULL);",       // STATUS
             NAME_TABLE_TV,
             DatabaseContract.TvShowCol._ID,
             DatabaseContract.TvShowCol.TVID,

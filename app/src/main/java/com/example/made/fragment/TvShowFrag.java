@@ -1,13 +1,17 @@
 package com.example.made.fragment;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -24,14 +28,32 @@ import com.example.made.data.TvShowData;
 
 import java.util.ArrayList;
 
-public class TvShowFrag extends Fragment implements MainView.TvShowDataArrayList {
+import static com.example.made.db.DatabaseContract.TvShowCol.CONTENT_URI;
+
+public class TvShowFrag extends Fragment implements MainView.TvShowDataArrayList, MainView.TvShowDataSearchList {
 
     private RecyclerView rvCategory;
+    private ArrayList<TvShow> tvShows = new ArrayList<>();
+    private ArrayList<TvShow> tvShow = new ArrayList<>();
     private TvShowViewAdapter movieAdapter;
     private ProgressBar progressBar;
-    private ArrayList<TvShow> list = new ArrayList<>();
     private String KEY_MOVIES = "tvshows";
     private SwipeRefreshLayout swipeRefresh;
+    private SearchView searchView;
+    private SearchView.OnQueryTextListener searchQueryListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String s) {
+            DBApi.doReqSearchTv(s, TvShowFrag.this);
+            searchView.clearFocus();
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String s) {
+            loadQuery(s);
+            return false;
+        }
+    };
 
     public TvShowFrag() {
     }
@@ -67,13 +89,13 @@ public class TvShowFrag extends Fragment implements MainView.TvShowDataArrayList
             Toast.makeText(getContext(), "Tv Ngulang lagi", Toast.LENGTH_SHORT).show();
             DBApi.doReqTvShows(this);
         } else {
-            list = savedInstanceState.getParcelableArrayList(KEY_MOVIES);
-            movieAdapter.refill(list);
+            tvShows = savedInstanceState.getParcelableArrayList(KEY_MOVIES);
+            movieAdapter.refill(tvShows);
         }
     }
 
     private void init(View view) {
-        movieAdapter = new TvShowViewAdapter(list);
+        movieAdapter = new TvShowViewAdapter(tvShows);
 
         progressBar = view.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
@@ -90,22 +112,61 @@ public class TvShowFrag extends Fragment implements MainView.TvShowDataArrayList
         rvCategory.setHasFixedSize(true);
         rvCategory.setLayoutManager(new LinearLayoutManager(getContext()));
         rvCategory.setAdapter(movieAdapter);
+
+        setHasOptionsMenu(true);
     }
 
     private void showRecyclerCardView() {
         ItemClickSupport.addTo(rvCategory).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                showSelectedPresident(list.get(position).getId());
+                showSelectedPresident(tvShows.get(position).getId());
             }
         });
     }
 
     private void showSelectedPresident(int movie) {
         Intent moveWithDataIntent = new Intent(getActivity(), DetailActivity.class);
+        Uri uri = Uri.parse(CONTENT_URI + "/" + movie);
+        moveWithDataIntent.setData(uri);
         moveWithDataIntent.putExtra(DetailActivity.EXTRA_INT, 2);
         moveWithDataIntent.putExtra(DetailActivity.EXTRA_TVSHOW, movie);
         startActivity(moveWithDataIntent);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.id_search);
+        searchView = (SearchView) menuItem.getActionView();
+        searchView.setIconifiedByDefault(true);
+        searchView.setQueryHint("looking something...");
+        searchView.setFocusable(false);
+        searchView.setIconified(false);
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(searchQueryListener);
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                movieAdapter.refill(tvShow);
+                tvShows = movieAdapter.getListNotes();
+                searchView.onActionViewCollapsed();
+                return false;
+            }
+        });
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    private void loadQuery(String s) {
+        ArrayList<TvShow> filterdata = new ArrayList<>();
+        String nextText = s.toLowerCase();
+        for (TvShow data : tvShow) {
+            String judul = data.getName().toLowerCase();
+            if (judul.contains(nextText))
+                filterdata.add(data);
+        }
+        movieAdapter.refill(filterdata);
+        tvShows = movieAdapter.getListNotes();
     }
 
     @Override
@@ -114,10 +175,22 @@ public class TvShowFrag extends Fragment implements MainView.TvShowDataArrayList
     }
 
     @Override
-    public void onSuccessTvShow(TvShowData movieResponse) {
+    public void hideLoading() {
         progressBar.setVisibility(View.GONE);
-        list = movieResponse.getResults();
-        movieAdapter.refill(list);
+    }
+
+    @Override
+    public void onSuccessSearchList(TvShowData movieResponse) {
+        tvShows = movieResponse.getResults();
+        movieAdapter.refill(tvShows);
+    }
+
+    @Override
+    public void onSuccessTvShow(TvShowData movieResponse) {
+        tvShows = movieResponse.getResults();
+        tvShow = new ArrayList<>();
+        tvShow.addAll(tvShows);
+        movieAdapter.refill(tvShows);
     }
 
     @Override
@@ -127,7 +200,7 @@ public class TvShowFrag extends Fragment implements MainView.TvShowDataArrayList
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelableArrayList(KEY_MOVIES, list);
+        outState.putParcelableArrayList(KEY_MOVIES, tvShows);
         super.onSaveInstanceState(outState);
     }
 }

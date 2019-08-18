@@ -2,7 +2,6 @@ package com.example.made.adapter;
 
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,27 +10,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.made.R;
-import com.example.made.data.Movie;
+import com.example.made.data.TvShow;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
-public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.MovieHolder> {
+public class FavTvAdapter extends RecyclerView.Adapter<FavTvAdapter.FavTvHolder> {
 
-    private ArrayList<Movie> items;
+    private ArrayList<TvShow> items;
     private View view;
 
-    public MovieViewAdapter(ArrayList<Movie> items) {
+    public FavTvAdapter(ArrayList<TvShow> items) {
         this.items = items;
     }
 
-    public ArrayList<Movie> getListNotes() {
+    public ArrayList<TvShow> getItems() {
         return items;
     }
 
-    public void refill(ArrayList<Movie> items) {
+    public void refill(ArrayList<TvShow> items) {
         if (items.size() > 0) {
             this.items = new ArrayList<>();
         }
@@ -40,23 +39,23 @@ public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.Movi
         notifyDataSetChanged();
     }
 
+    public void emptyItem() {
+        this.items.removeAll(items);
+
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
-    public MovieHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public FavTvHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         view = viewGroup;
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_cardview_president, viewGroup, false);
-        return new MovieHolder(v);
+        return new FavTvHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MovieHolder movieHolder, int i) {
-        movieHolder.cvNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        movieHolder.onBind(items.get(i));
+    public void onBindViewHolder(@NonNull FavTvHolder favTvHolder, int i) {
+        favTvHolder.onBind(items.get(i));
     }
 
     @Override
@@ -64,35 +63,33 @@ public class MovieViewAdapter extends RecyclerView.Adapter<MovieViewAdapter.Movi
         return items.size();
     }
 
-    class MovieHolder extends RecyclerView.ViewHolder {
+    class FavTvHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvTitle, tvInfo, tvVote;
-        private ImageView ivPoster, ivBackdrop;
-        private CardView cvNote;
+        private TextView tvTitle, tvInfo;
+        private ImageView ivPoster;
 
-        MovieHolder(@NonNull View itemView) {
+        FavTvHolder(@NonNull View itemView) {
             super(itemView);
 
-            cvNote = itemView.findViewById(R.id.cardview);
             tvTitle = itemView.findViewById(R.id.item_name);
             ivPoster = itemView.findViewById(R.id.img_item_photo);
             tvInfo = itemView.findViewById(R.id.runtime);
         }
 
-        void onBind(Movie item) {
-            if (item.getImage() != null && !item.getImage().isEmpty()) {
-                Picasso.get().load(item.getImage()).transform(new CropCircleTransformation()).into(ivPoster);
+        void onBind(TvShow tvShow) {
+            if (tvShow.getImage() != null && !tvShow.getImage().isEmpty()) {
+                Picasso.get().load(tvShow.getImage()).transform(new CropCircleTransformation()).into(ivPoster);
             }
 
-            String title = checkTextIfNull(item.getName());
+            String title = checkTextIfNull(tvShow.getName());
             int orientation = view.getResources().getConfiguration().orientation;
 
             if (title.length() > 30 && orientation == Configuration.ORIENTATION_PORTRAIT) {
                 tvTitle.setText(String.format("%s...", title.substring(0, 29)));
-            } else if (title.length() <= 30 || orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                tvTitle.setText(checkTextIfNull(item.getName()));
+            } else if (title.length() < 30 || orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                tvTitle.setText(checkTextIfNull(tvShow.getName()));
             }
-            tvInfo.setText(checkTextIfNull(item.getOverview()));
+            tvInfo.setText(checkTextIfNull(tvShow.getOverview()));
         }
 
         String checkTextIfNull(String text) {

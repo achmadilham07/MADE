@@ -1,105 +1,126 @@
 package com.example.made.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.ArrayMap;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.made.MainView;
 import com.example.made.R;
 import com.example.made.db.MovieHelper;
 import com.example.made.fragment.FavoriteFrag;
 import com.example.made.fragment.MovieFrag;
 import com.example.made.fragment.TvShowFrag;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements MainView.LoadMovieCallback, MainView.LoadTvShowCallback {
 
     private final Fragment fragment1 = new MovieFrag();
     private final Fragment fragment2 = new TvShowFrag();
     private final Fragment fragment3 = new FavoriteFrag();
     private final FragmentManager fm = getSupportFragmentManager();
-    private ViewPager viewPager;
-    private MenuItem prevMenuItem;
+    private Fragment active = new Fragment();
+    private String STATE_HELPER = "helper";
+    private String STATE_ITEM = "item";
     private MovieHelper movieHelper;
+    private BottomNavigationView navView;
+    private ArrayMap<Integer, Fragment> fragmentMap = new ArrayMap<>();
+    private FragmentStateHelper stateHelper2;
+    private int itemid = 0;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            int itemId = item.getItemId();
-            switch (itemId) {
+            itemid = item.getItemId();
+            switch (itemid) {
                 case R.id.navigation_home:
-                    viewPager.setCurrentItem(0);
-                    return true;
+                    active = fragment1;
+                    break;
                 case R.id.navigation_dashboard:
-                    viewPager.setCurrentItem(1);
-                    return true;
+                    active = fragment2;
+                    break;
                 case R.id.navigation_notifications:
-                    viewPager.setCurrentItem(2);
-                    return true;
+                    active = fragment3;
+                    break;
             }
-            return false;
+            Log.e("DATA_ERROR", String.format("%d - %s", item.getItemId(), active));
+            fragmentMap.put(item.getItemId(), active);
+
+            if (navView.getSelectedItemId() != 0) {
+                saveCurrentState(itemid);
+//                stateHelper.restoreState(active, item.getItemId());
+                stateHelper2.restoreState(active, item.getItemId());
+            }
+
+            addFragment(active);
+
+            return true;
         }
     };
+
+    private void addFragment(Fragment fragment) {
+        fm.beginTransaction()
+                .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out)
+                .replace(R.id.content, fragment)
+                .commitNowAllowingStateLoss();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        final BottomNavigationView navView = findViewById(R.id.navigation);
+        navView = findViewById(R.id.navigation);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        stateHelper2 = new FragmentStateHelper(fm);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getResources().getString(R.string.app_name));
 
-        movieHelper = MovieHelper.getInstance(getApplicationContext());
-        movieHelper.open();
+//        movieHelper = MovieHelper.getInstance(getApplicationContext());
+//        movieHelper.open();
 
-        viewPager = findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i1) {
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                if (prevMenuItem != null) {
-                    prevMenuItem.setChecked(false);
-                } else {
-                    navView.getMenu().getItem(0).setChecked(false);
-                }
-                navView.getMenu().getItem(i).setChecked(true);
-                prevMenuItem = navView.getMenu().getItem(i);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-
-            }
-        });
+        save_reload_state(savedInstanceState);
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(fm);
-        adapter.addFragment(fragment1);
-        adapter.addFragment(fragment2);
-        adapter.addFragment(fragment3);
-        viewPager.setAdapter(adapter);
+    private void save_reload_state(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            addFragment(fragment1);
+        } else {
+            Bundle helperState = savedInstanceState.getBundle(STATE_HELPER);
+            itemid = savedInstanceState.getInt(STATE_ITEM);
+            if (helperState != null) {
+                stateHelper2.restoreHelperState(helperState);
+            }
+        }
+
+    }
+
+    private void saveCurrentState(int item) {
+        showAllArray();
+        Fragment oldFragment = fragmentMap.get(item);
+        Log.e("DATA_OLDFrag", String.valueOf(item));
+        if (oldFragment != null) {
+            stateHelper2.saveState(oldFragment, item);
+        }
+    }
+
+    private void showAllArray() {
+        for (int i = 0; i < fragmentMap.size(); i++) {
+            Log.e("SEMUA_DATA", String.format("%d - %s", fragmentMap.keyAt(i), fragmentMap.valueAt(i)));
+        }
     }
 
     @Override
@@ -118,30 +139,20 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        movieHelper.close();
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveCurrentState(itemid);
+        outState.putBundle(STATE_HELPER, stateHelper2.saveHelperState());
+        outState.putInt(STATE_ITEM, itemid);
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
+    @Override
+    public void preExecute() {
 
-        ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
+    }
 
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
+    @Override
+    public void postExecute(Cursor notes) {
 
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        void addFragment(Fragment fragment) {
-            mFragmentList.add(fragment);
-        }
     }
 }

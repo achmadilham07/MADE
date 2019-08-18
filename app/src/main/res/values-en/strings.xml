@@ -10,5 +10,8 @@
     <string name="status">Status</string>
     <string name="runtime">Runtime</string>
     <string name="minute">minutes</string>
+    <string name="search">Search</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="empty_text">NO DATA</string>
 </resources>
 

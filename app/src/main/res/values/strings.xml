@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MADE Class</string>
     <string name="change_language_settings">Change Language Settings</string>
@@ -5,11 +6,14 @@
     <string name="tab2">Tv Show</string>
     <string name="tab3">Favorite</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="overview">Overview</string>
     <string name="first_air_date">First Air Date</string>
     <string name="status">Status</string>
     <string name="runtime">Runtime</string>
     <string name="minute">minutes</string>
+    <string name="search">Search</string>
+
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="empty_text">NO DATA</string>
 </resources>
 

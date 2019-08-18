@@ -19,8 +19,9 @@ public class DBApi {
     private static String getMovie() {
         return Uri.parse(BuildConfig.BASE_URL).buildUpon()
                 .appendPath("3")
-                .appendPath("discover")
+//                .appendPath("discover")
                 .appendPath("movie")
+                .appendPath("now_playing")
                 .appendQueryParameter("api_key", BuildConfig.API_KEY)
                 .appendQueryParameter("language", "en-US")
                 .appendQueryParameter("page", "1")
@@ -31,8 +32,9 @@ public class DBApi {
     private static String getTv() {
         return Uri.parse(BuildConfig.BASE_URL).buildUpon()
                 .appendPath("3")
-                .appendPath("discover")
+//                .appendPath("discover")
                 .appendPath("tv")
+                .appendPath("popular")
                 .appendQueryParameter("api_key", BuildConfig.API_KEY)
                 .appendQueryParameter("language", "en-US")
                 .appendQueryParameter("page", "1")
@@ -62,6 +64,32 @@ public class DBApi {
                 .toString();
     }
 
+    private static String getSearchMovie(String query) {
+        //https://api.themoviedb.org/3/search/movie?api_key=241d0503954ef8a961d37c3ef7490ede&language=en-US&query=Avenger
+        return Uri.parse(BuildConfig.BASE_URL).buildUpon()
+                .appendPath("3")
+                .appendPath("search")
+                .appendPath("movie")
+                .appendQueryParameter("api_key", BuildConfig.API_KEY)
+                .appendQueryParameter("language", "en-US")
+                .appendQueryParameter("query", query)
+                .build()
+                .toString();
+    }
+
+    private static String getSearchTv(String query) {
+        //https://api.themoviedb.org/3/search/tv?api_key=241d0503954ef8a961d37c3ef7490ede&language=en-US&query=Avenger
+        return Uri.parse(BuildConfig.BASE_URL).buildUpon()
+                .appendPath("3")
+                .appendPath("search")
+                .appendPath("tv")
+                .appendQueryParameter("api_key", BuildConfig.API_KEY)
+                .appendQueryParameter("language", "en-US")
+                .appendQueryParameter("query", query)
+                .build()
+                .toString();
+    }
+
     public static void doReqMovies(final MainView.MovieDataArrayList callback) {
         Log.e("error", getMovie());
         callback.showLoading();
@@ -72,6 +100,7 @@ public class DBApi {
                 .getAsObject(MovieData.class, new ParsedRequestListener<MovieData>() {
                     @Override
                     public void onResponse(MovieData response) {
+                        callback.hideLoading();
                         callback.onSuccessMovie(response);
                     }
 
@@ -93,6 +122,7 @@ public class DBApi {
                 .getAsObject(TvShowData.class, new ParsedRequestListener<TvShowData>() {
                     @Override
                     public void onResponse(TvShowData response) {
+                        callback.hideLoading();
                         callback.onSuccessTvShow(response);
                     }
 
@@ -138,6 +168,50 @@ public class DBApi {
                     public void onResponse(TvShow response) {
                         callback.hideLoading();
                         callback.onSuccessTv(response);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e("ERROR", "onError: ", anError);
+                        callback.onFailed("Terjadi kesalahan saat menghubungi server");
+                    }
+                });
+    }
+
+    public static void doReqSearchMovie(String query, final MainView.MovieDataSearchList callback) {
+        Log.e("error", getSearchMovie(query));
+        callback.showLoading();
+        AndroidNetworking.get(getSearchMovie(query))
+                .setTag(DBApi.class)
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsObject(MovieData.class, new ParsedRequestListener<MovieData>() {
+                    @Override
+                    public void onResponse(MovieData response) {
+                        callback.hideLoading();
+                        callback.onSuccessSearchList(response);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e("ERROR", "onError: ", anError);
+                        callback.onFailed("Terjadi kesalahan saat menghubungi server");
+                    }
+                });
+    }
+
+    public static void doReqSearchTv(String query, final MainView.TvShowDataSearchList callback) {
+        Log.e("error", getSearchTv(query));
+        callback.showLoading();
+        AndroidNetworking.get(getSearchTv(query))
+                .setTag(DBApi.class)
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsObject(TvShowData.class, new ParsedRequestListener<TvShowData>() {
+                    @Override
+                    public void onResponse(TvShowData response) {
+                        callback.hideLoading();
+                        callback.onSuccessSearchList(response);
                     }
 
                     @Override

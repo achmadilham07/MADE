@@ -13,6 +13,7 @@
             android:id="@+id/rv_movie"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:cacheColorHint="@android:color/transparent"
             tools:listitem="@layout/item_row_president" />
 
     </android.support.v4.widget.SwipeRefreshLayout>

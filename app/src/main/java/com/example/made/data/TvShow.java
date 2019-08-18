@@ -1,23 +1,18 @@
 package com.example.made.data;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.made.db.DatabaseContract;
 import com.google.gson.annotations.SerializedName;
+
+import static com.example.made.db.DatabaseContract.getColumnInt;
+import static com.example.made.db.DatabaseContract.getColumnIntArray;
+import static com.example.made.db.DatabaseContract.getColumnString;
 
 public class TvShow implements Parcelable {
 
-    public static final Creator<TvShow> CREATOR = new Creator<TvShow>() {
-        @Override
-        public TvShow createFromParcel(Parcel source) {
-            return new TvShow(source);
-        }
-
-        @Override
-        public TvShow[] newArray(int size) {
-            return new TvShow[size];
-        }
-    };
     @SerializedName("id")
     private int id;
     @SerializedName("name")
@@ -34,20 +29,6 @@ public class TvShow implements Parcelable {
     private int[] runtime;
     @SerializedName("status")
     private String status;
-
-    public TvShow() {
-    }
-
-    protected TvShow(Parcel in) {
-        this.id = in.readInt();
-        this.name = in.readString();
-        this.image = in.readString();
-        this.thumbnail = in.readString();
-        this.overview = in.readString();
-        this.release_date = in.readString();
-        this.runtime = in.createIntArray();
-        this.status = in.readString();
-    }
 
     public int getId() {
         return id;
@@ -128,5 +109,53 @@ public class TvShow implements Parcelable {
         dest.writeString(this.release_date);
         dest.writeIntArray(this.runtime);
         dest.writeString(this.status);
+    }
+
+    public static final Creator<TvShow> CREATOR = new Creator<TvShow>() {
+        @Override
+        public TvShow createFromParcel(Parcel source) {
+            return new TvShow(source);
+        }
+
+        @Override
+        public TvShow[] newArray(int size) {
+            return new TvShow[size];
+        }
+    };
+
+    public TvShow() {
+    }
+
+    public TvShow(int id, String name, String image, String thumbnail, String overview, String release_date, int[] runtime, String status) {
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.thumbnail = thumbnail;
+        this.overview = overview;
+        this.release_date = release_date;
+        this.runtime = runtime;
+        this.status = status;
+    }
+
+    public TvShow(Cursor cursor) {
+        this.id = getColumnInt(cursor, DatabaseContract.TvShowCol.TVID);
+        this.name = getColumnString(cursor, DatabaseContract.TvShowCol.NAME);
+        this.image = getColumnString(cursor, DatabaseContract.TvShowCol.IMAGE);
+        this.thumbnail = getColumnString(cursor, DatabaseContract.TvShowCol.THUMBNAIL);
+        this.overview = getColumnString(cursor, DatabaseContract.TvShowCol.OVERVIEW);
+        this.release_date = getColumnString(cursor, DatabaseContract.TvShowCol.DATE);
+        this.runtime = getColumnIntArray(cursor, DatabaseContract.TvShowCol.RUNTIME);
+        this.status = getColumnString(cursor, DatabaseContract.TvShowCol.STATUS);
+    }
+
+    protected TvShow(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.image = in.readString();
+        this.thumbnail = in.readString();
+        this.overview = in.readString();
+        this.release_date = in.readString();
+        this.runtime = in.createIntArray();
+        this.status = in.readString();
     }
 }
