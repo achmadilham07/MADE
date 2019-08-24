@@ -1,17 +1,18 @@
 package com.example.made.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.example.made.R;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,6 @@ public class FavoriteFrag extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         // Defines the xml file for the fragment
-        setRetainInstance(true);
         return inflater.inflate(R.layout.activity_main, parent, false);
     }
 
@@ -35,7 +35,7 @@ public class FavoriteFrag extends Fragment {
         ViewPager viewPager = view.findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        TabLayout tabLayout = view.findViewById(R.id.tabs_main);
+        TabLayout tabLayout = view.findViewById(R.id.tabs_mains);
         tabLayout.setupWithViewPager(viewPager);
     }
 

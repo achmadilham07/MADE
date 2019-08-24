@@ -19,9 +19,9 @@ public class DBApi {
     private static String getMovie() {
         return Uri.parse(BuildConfig.BASE_URL).buildUpon()
                 .appendPath("3")
-//                .appendPath("discover")
+                .appendPath("discover")
                 .appendPath("movie")
-                .appendPath("now_playing")
+//                .appendPath("now_playing")
                 .appendQueryParameter("api_key", BuildConfig.API_KEY)
                 .appendQueryParameter("language", "en-US")
                 .appendQueryParameter("page", "1")
@@ -32,9 +32,9 @@ public class DBApi {
     private static String getTv() {
         return Uri.parse(BuildConfig.BASE_URL).buildUpon()
                 .appendPath("3")
-//                .appendPath("discover")
+                .appendPath("discover")
                 .appendPath("tv")
-                .appendPath("popular")
+//                .appendPath("popular")
                 .appendQueryParameter("api_key", BuildConfig.API_KEY)
                 .appendQueryParameter("language", "en-US")
                 .appendQueryParameter("page", "1")
@@ -90,8 +90,20 @@ public class DBApi {
                 .toString();
     }
 
+    public static String getReleaseMovie(String query) {
+        // https://api.themoviedb.org/3/discover/movie?api_key=123456789&primary_release_date.gte=2019-01-31&primary_release_date.lte=2019-01-31
+        return Uri.parse(BuildConfig.BASE_URL).buildUpon()
+                .appendPath("3")
+                .appendPath("discover")
+                .appendPath("movie")
+                .appendQueryParameter("api_key", BuildConfig.API_KEY)
+                .appendQueryParameter("primary_release_date.gte", query)
+                .appendQueryParameter("primary_release_date.lte", query)
+                .build()
+                .toString();
+    }
+
     public static void doReqMovies(final MainView.MovieDataArrayList callback) {
-        Log.e("error", getMovie());
         callback.showLoading();
         AndroidNetworking.get(getMovie())
                 .setTag(DBApi.class)
@@ -113,7 +125,6 @@ public class DBApi {
     }
 
     public static void doReqTvShows(final MainView.TvShowDataArrayList callback) {
-        Log.e("error", getTv());
         callback.showLoading();
         AndroidNetworking.get(getTv())
                 .setTag(DBApi.class)
@@ -135,7 +146,6 @@ public class DBApi {
     }
 
     public static void doReqIdMovies(int idMovie, final MainView.MovieDataList callback) {
-        Log.e("error", getIdMovie(idMovie));
         callback.showLoading();
         AndroidNetworking.get(getIdMovie(idMovie))
                 .setTag(DBApi.class)
@@ -157,7 +167,6 @@ public class DBApi {
     }
 
     public static void doReqIdTv(int idTv, final MainView.TvShowDataList callback) {
-        Log.e("error", getIdTv(idTv));
         callback.showLoading();
         AndroidNetworking.get(getIdTv(idTv))
                 .setTag(DBApi.class)
@@ -179,7 +188,6 @@ public class DBApi {
     }
 
     public static void doReqSearchMovie(String query, final MainView.MovieDataSearchList callback) {
-        Log.e("error", getSearchMovie(query));
         callback.showLoading();
         AndroidNetworking.get(getSearchMovie(query))
                 .setTag(DBApi.class)
@@ -201,7 +209,6 @@ public class DBApi {
     }
 
     public static void doReqSearchTv(String query, final MainView.TvShowDataSearchList callback) {
-        Log.e("error", getSearchTv(query));
         callback.showLoading();
         AndroidNetworking.get(getSearchTv(query))
                 .setTag(DBApi.class)
@@ -212,6 +219,25 @@ public class DBApi {
                     public void onResponse(TvShowData response) {
                         callback.hideLoading();
                         callback.onSuccessSearchList(response);
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e("ERROR", "onError: ", anError);
+                        callback.onFailed("Terjadi kesalahan saat menghubungi server");
+                    }
+                });
+    }
+
+    public static void doReqReleaseMovie(String query, final MainView.LoadReleaseCallback callback) {
+        AndroidNetworking.get(getReleaseMovie(query))
+                .setTag(DBApi.class)
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsObject(MovieData.class, new ParsedRequestListener<MovieData>() {
+                    @Override
+                    public void onResponse(MovieData response) {
+                        callback.onSuccessMovie(response);
                     }
 
                     @Override

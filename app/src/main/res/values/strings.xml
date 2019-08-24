@@ -15,5 +15,19 @@
 
     <string name="appwidget_text">EXAMPLE</string>
     <string name="empty_text">NO DATA</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Notification</string>
+    <string name="release_reminder">Release Reminder</string>
+    <string name="release_summary_on">If turned off, you wont be able show released movie today</string>
+    <string name="release_summary_off">Reminder showing the movie that released today</string>
+    <string name="daily_reminder">Daily Reminder</string>
+    <string name="daily_summary">Reminder for return to app</string>
+    <string name="content_title">MADE Class</string>
+
+    <!-- Messages Preferences -->
+
+    <!-- Sync Preferences -->
 </resources>
 

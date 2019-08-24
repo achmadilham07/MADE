@@ -1,8 +1,9 @@
 package com.example.made;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ItemClickSupport {
     private final RecyclerView mRecyclerView;

@@ -4,23 +4,24 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.ArrayMap;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.made.MainView;
 import com.example.made.R;
-import com.example.made.db.MovieHelper;
 import com.example.made.fragment.FavoriteFrag;
 import com.example.made.fragment.MovieFrag;
 import com.example.made.fragment.TvShowFrag;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity implements MainView.LoadMovieCallback, MainView.LoadTvShowCallback {
 
@@ -31,12 +32,11 @@ public class HomeActivity extends AppCompatActivity implements MainView.LoadMovi
     private Fragment active = new Fragment();
     private String STATE_HELPER = "helper";
     private String STATE_ITEM = "item";
-    private MovieHelper movieHelper;
     private BottomNavigationView navView;
     private ArrayMap<Integer, Fragment> fragmentMap = new ArrayMap<>();
-    private FragmentStateHelper stateHelper2;
     private int itemid = 0;
-
+    private ProgressBar progressBar;
+    private FragmentStateHelper stateHelper;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -54,13 +54,11 @@ public class HomeActivity extends AppCompatActivity implements MainView.LoadMovi
                     active = fragment3;
                     break;
             }
-            Log.e("DATA_ERROR", String.format("%d - %s", item.getItemId(), active));
             fragmentMap.put(item.getItemId(), active);
 
             if (navView.getSelectedItemId() != 0) {
                 saveCurrentState(itemid);
-//                stateHelper.restoreState(active, item.getItemId());
-                stateHelper2.restoreState(active, item.getItemId());
+                stateHelper.restoreState(active, item.getItemId());
             }
 
             addFragment(active);
@@ -80,19 +78,22 @@ public class HomeActivity extends AppCompatActivity implements MainView.LoadMovi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        init();
+        save_reload_state(savedInstanceState);
+    }
+
+    private void init() {
         navView = findViewById(R.id.navigation);
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        stateHelper2 = new FragmentStateHelper(fm);
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
+
+        stateHelper = new FragmentStateHelper(fm);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getResources().getString(R.string.app_name));
-
-//        movieHelper = MovieHelper.getInstance(getApplicationContext());
-//        movieHelper.open();
-
-        save_reload_state(savedInstanceState);
     }
 
     private void save_reload_state(Bundle savedInstanceState) {
@@ -102,24 +103,15 @@ public class HomeActivity extends AppCompatActivity implements MainView.LoadMovi
             Bundle helperState = savedInstanceState.getBundle(STATE_HELPER);
             itemid = savedInstanceState.getInt(STATE_ITEM);
             if (helperState != null) {
-                stateHelper2.restoreHelperState(helperState);
+                stateHelper.restoreHelperState(helperState);
             }
         }
-
     }
 
     private void saveCurrentState(int item) {
-        showAllArray();
         Fragment oldFragment = fragmentMap.get(item);
-        Log.e("DATA_OLDFrag", String.valueOf(item));
         if (oldFragment != null) {
-            stateHelper2.saveState(oldFragment, item);
-        }
-    }
-
-    private void showAllArray() {
-        for (int i = 0; i < fragmentMap.size(); i++) {
-            Log.e("SEMUA_DATA", String.format("%d - %s", fragmentMap.keyAt(i), fragmentMap.valueAt(i)));
+            stateHelper.saveState(oldFragment, item);
         }
     }
 
@@ -134,6 +126,9 @@ public class HomeActivity extends AppCompatActivity implements MainView.LoadMovi
         if (item.getItemId() == R.id.action_change_settings) {
             Intent mIntent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
             startActivity(mIntent);
+        } else if (item.getItemId() == R.id.notification_setting) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -142,7 +137,7 @@ public class HomeActivity extends AppCompatActivity implements MainView.LoadMovi
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         saveCurrentState(itemid);
-        outState.putBundle(STATE_HELPER, stateHelper2.saveHelperState());
+        outState.putBundle(STATE_HELPER, stateHelper.saveHelperState());
         outState.putInt(STATE_ITEM, itemid);
     }
 

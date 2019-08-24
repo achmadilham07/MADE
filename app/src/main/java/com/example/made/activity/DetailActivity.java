@@ -4,12 +4,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +11,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.made.MainView;
 import com.example.made.R;
@@ -26,6 +25,7 @@ import com.example.made.data.TvShow;
 import com.example.made.db.DatabaseContract;
 import com.example.made.db.MovieHelper;
 import com.example.made.db.TvShowHelper;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.squareup.picasso.Picasso;
 
 import jp.wasabeef.picasso.transformations.BlurTransformation;
@@ -126,7 +126,6 @@ public class DetailActivity extends AppCompatActivity implements MainView.MovieD
                 tvShowHelper.read();
                 result = tvShowHelper.selectNote(idTv);
             }
-            Log.e("DATA_RESULT", String.valueOf(result));
             if (result != 0)
                 isFavorite = true;
         } catch (SQLiteConstraintException e) {
@@ -170,13 +169,10 @@ public class DetailActivity extends AppCompatActivity implements MainView.MovieD
 
     private void removeFromFavorite() {
         try {
-            long result = 0;
             Intent intent = new Intent();
             if (data == 1) {
-                //result = movieHelper.deleteNote(idMovie);
                 intent.putExtra(EXTRA_MOVIE, idMovie);
             } else if (data == 2) {
-                //result = tvShowHelper.deleteNote(idTv);
                 intent.putExtra(EXTRA_TVSHOW, idTv);
             }
             getContentResolver().delete(getIntent().getData(), null, null);
@@ -189,15 +185,11 @@ public class DetailActivity extends AppCompatActivity implements MainView.MovieD
 
     private void addToFavorite() {
         try {
-            long result = 0;
             ContentValues values = new ContentValues();
             if (data == 1) {
-                //result = movieHelper.insertNote(movie);
                 putDataMovie(values, movie);
                 getContentResolver().insert(DatabaseContract.MovieCol.CONTENT_URI, values);
             } else if (data == 2) {
-                //result = tvShowHelper.insertNote(tvShow);
-                Log.e("DATA_FAV", "ini masuk Fav");
                 putDataTv(values, tvShow);
                 getContentResolver().insert(DatabaseContract.TvShowCol.CONTENT_URI, values);
             }
@@ -270,7 +262,6 @@ public class DetailActivity extends AppCompatActivity implements MainView.MovieD
         tvInfo.setText(movie.getOverview());
         tvRelease.setText(movie.getRelease_date());
         tvStat.setText(movie.getStatus());
-        Log.e("data_error", "" + movie.getRuntime());
         tvTime.setText(String.format("%d %s", movie.getRuntime(), getResources().getString(R.string.minute)));
         Picasso.get().load(movie.getThumbnail()).transform(new BlurTransformation(getApplicationContext(), 3)).into(tvImgBack);
         Picasso.get().load(movie.getImage()).into(tvImgPoster);

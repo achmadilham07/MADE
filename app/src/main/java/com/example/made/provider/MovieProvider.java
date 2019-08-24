@@ -6,7 +6,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.example.made.db.MovieHelper;
 import com.example.made.fragment.FavMovieFrag;

@@ -13,5 +13,13 @@
     <string name="search">Cari</string>
     <string name="appwidget_text">CONTOH</string>
     <string name="empty_text">TIDAK ADA DATA</string>
+    <string name="daily_reminder">Pengingat Harian</string>
+    <string name="daily_summary">Pengingat untuk kembali ke aplikasi</string>
+    <string name="messages_header">Notifikasi</string>
+    <string name="release_reminder">Pengingat Film</string>
+    <string name="release_summary_off">Pengingat menunjukkan film yang tayang hari ini</string>
+    <string name="release_summary_on">Jika dimatikan, kamu tidak akan dapat melihat film tayang hari ini</string>
+    <string name="title_activity_settings">Pengaturan</string>
+    <string name="content_title">MADE Class</string>
 </resources>
 

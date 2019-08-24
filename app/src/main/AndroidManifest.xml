@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <permission
         android:name="com.example.made.READ_DATABASE"
@@ -22,6 +23,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".activity.HomeActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.made.activity.HomeActivity" />
+        </activity>
+
         <receiver android:name=".widget.ImageBannerWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -35,6 +46,9 @@
         <service
             android:name=".widget.StackWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver android:name=".notif.ReleaseAlarmReceiver" />
+        <receiver android:name=".notif.DailyAlarmReceiver" />
 
         <activity android:name=".activity.DetailActivity" />
         <activity android:name=".activity.HomeActivity">
@@ -51,7 +65,6 @@
             android:exported="true"
             android:readPermission="com.example.made.READ_DATABASE"
             android:writePermission="com.example.made.WRITE_DATABASE" />
-
         <provider
             android:name=".provider.TvShowProvider"
             android:authorities="com.example.made.data.TvShow"

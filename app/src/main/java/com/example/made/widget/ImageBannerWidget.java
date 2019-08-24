@@ -5,11 +5,17 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.example.made.R;
+import com.example.made.data.Movie;
+import com.example.made.data.TvShow;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of App Widget functionality.
@@ -18,6 +24,10 @@ public class ImageBannerWidget extends AppWidgetProvider {
 
     public static final String EXTRA_ITEM = "EXTRA_ITEM";
     private static final String TOAST_ACTION = "TOAST_ACTION";
+    private static List<Bitmap> mWidgetItems = new ArrayList<>();
+    private static List<String> mWidgetString = new ArrayList<>();
+    private static ArrayList<TvShow> tvShows = new ArrayList<>();
+    private static ArrayList<Movie> movies = new ArrayList<>();
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
@@ -39,7 +49,6 @@ public class ImageBannerWidget extends AppWidgetProvider {
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
-
 
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.made.data.Movie;
 
@@ -114,7 +113,6 @@ public class MovieHelper {
 
     public int selectNote(int id) {
         String query = "SELECT * FROM " + DATABASE_TABLE + " WHERE " + MOVIEID + "=" + id + "";
-        Log.e("DATA_QUERY", query);
         Cursor cursor = database.rawQuery(query, null);
         if (cursor != null) {
             cursor.moveToFirst();

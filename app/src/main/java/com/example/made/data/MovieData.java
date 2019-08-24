@@ -11,5 +11,4 @@ public class MovieData {
     public ArrayList<Movie> getResults() {
         return results;
     }
-
 }

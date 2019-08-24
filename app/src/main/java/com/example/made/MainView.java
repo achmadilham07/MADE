@@ -81,4 +81,10 @@ public interface MainView {
 
         void postExecute(Cursor notes);
     }
+
+    interface LoadReleaseCallback {
+        void onSuccessMovie(MovieData movieResponse);
+
+        void onFailed(String error);
+    }
 }

@@ -9,19 +9,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.made.ItemClickSupport;
 import com.example.made.MainView;
@@ -31,6 +30,7 @@ import com.example.made.activity.HomeActivity;
 import com.example.made.adapter.FavTvAdapter;
 import com.example.made.data.TvShow;
 import com.example.made.db.TvShowHelper;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -43,13 +43,11 @@ public class FavTvShowFrag extends Fragment implements MainView.LoadTvShowCallba
     private RecyclerView recyclerView;
     private static HandlerThread handlerThread;
     private ArrayList<TvShow> tvShows = new ArrayList<>();
-    private ArrayList<TvShow> tvShow = new ArrayList<>();
     private ProgressBar progressBar;
     private String KEY_MOVIES = "tvshow_fav";
     private TvShowHelper tvShowHelper;
     private SwipeRefreshLayout swipeRefresh;
     private FavTvAdapter favTvAdapter;
-    private SearchView searchView;
     private DataObserver myObserver;
 
     public FavTvShowFrag() {
@@ -59,7 +57,6 @@ public class FavTvShowFrag extends Fragment implements MainView.LoadTvShowCallba
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        setRetainInstance(true);
         return inflater.inflate(R.layout.layout_movie, container, false);
     }
 
@@ -114,8 +111,6 @@ public class FavTvShowFrag extends Fragment implements MainView.LoadTvShowCallba
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(favTvAdapter);
 
-        //setHasOptionsMenu(true);
-
         handlerThread = new HandlerThread("DataObserver");
         handlerThread.start();
         Handler handler = new Handler(handlerThread.getLooper());
@@ -130,7 +125,6 @@ public class FavTvShowFrag extends Fragment implements MainView.LoadTvShowCallba
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                //showSelectedPresident(tvShows.get(position).getId());
                 showSelectedPresident(favTvAdapter.getItems().get(position).getId());
             }
         });
@@ -145,68 +139,10 @@ public class FavTvShowFrag extends Fragment implements MainView.LoadTvShowCallba
         startActivity(moveWithDataIntent);
     }
 
-//    @Override
-//    public void onPrepareOptionsMenu(Menu menu) {
-//        MenuItem menuItem = menu.findItem(R.id.id_search);
-//        searchView = (SearchView) menuItem.getActionView();
-//        searchView.setIconifiedByDefault(true);
-//        searchView.setQueryHint("looking something...");
-//        searchView.setFocusable(false);
-//        searchView.setIconified(false);
-//        searchView.clearFocus();
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String s) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String s) {
-//                loadQuery(s);
-//                return false;
-//            }
-//        });
-//        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-//            @Override
-//            public boolean onClose() {
-//                favTvAdapter.refill(tvShow);
-//                tvShows = favTvAdapter.getItems();
-//                searchView.onActionViewCollapsed();
-//                return false;
-//            }
-//        });
-//
-//        super.onPrepareOptionsMenu(menu);
-//    }
-
-    private void loadQuery(String s) {
-        ArrayList<TvShow> filterdata = new ArrayList<>();
-        String nextText = s.toLowerCase();
-        for (TvShow data : tvShow) {
-            String judul = data.getName().toLowerCase();
-            if (judul.contains(nextText))
-                filterdata.add(data);
-        }
-        favTvAdapter.refill(filterdata);
-        tvShows = favTvAdapter.getItems();
-    }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putParcelableArrayList(KEY_MOVIES, favTvAdapter.getItems());
         super.onSaveInstanceState(outState);
-    }
-
-    public void showLoading() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    public void onSuccessMovie() {
-        tvShows = tvShowHelper.getAllNotes();
-        tvShow = new ArrayList<>();
-        tvShow.addAll(tvShows);
-        //favTvAdapter.refill(tvShows);
-        progressBar.setVisibility(View.GONE);
     }
 
     @Override
